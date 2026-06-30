@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Estudio · Cálculo Diferencial</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  #root { font-family: 'Inter', sans-serif; background: #0f1117; min-height: 100vh; color: #e8e8f0; padding: 1.5rem; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #6c63ff; color: #fff; }
+  .btn-success { background: #4ade80; color: #0f1117; }
+  .btn-danger { background: #f87171; color: #0f1117; }
+  .btn-outline { background: transparent; color: #e8e8f0; border: 1px solid #3a3a55; }
+  .btn-outline:hover { background: #1a1d27; }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .card { background: #1a1d27; border-radius: 12px; padding: 1.4rem; border: 1px solid #2a2a40; }
+  .progress-bar { background: #2a2a40; border-radius: 99px; height: 6px; margin: 10px 0 20px; }
+  .progress-fill { background: #6c63ff; height: 100%; border-radius: 99px; transition: width 0.3s; }
+  .tab { padding: 8px 16px; border-radius: 8px; border: 1px solid #3a3a55; background: transparent; color: #8888aa; cursor: pointer; font-size: 13px; font-family: 'Inter', sans-serif; }
+  .tab.active { background: #6c63ff; color: #fff; border-color: #6c63ff; }
+  .schema-item { background: #12141e; border-left: 3px solid #6c63ff; border-radius: 4px; padding: 10px 14px; margin: 6px 0; display: flex; gap: 10px; align-items: flex-start; }
+  .schema-term { color: #6c63ff; font-weight: 600; min-width: 150px; font-size: 13px; }
+  .schema-def { color: #c0c0d8; font-size: 13px; line-height: 1.5; }
+  textarea { width: 100%; background: #12141e; border: 1px solid #3a3a55; border-radius: 8px; color: #e8e8f0; font-family: 'Inter', sans-serif; font-size: 14px; padding: 12px; resize: vertical; min-height: 70px; }
+  textarea:focus { outline: none; border-color: #6c63ff; }
+  .option-btn { width: 100%; text-align: left; padding: 12px 16px; margin: 5px 0; border-radius: 8px; border: 1px solid #3a3a55; background: #12141e; color: #e8e8f0; cursor: pointer; font-size: 14px; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .option-btn:hover { border-color: #6c63ff; background: #1e1a3a; }
+  .option-btn.correct { border-color: #4ade80; background: #0d2e1a; color: #4ade80; }
+  .option-btn.wrong { border-color: #f87171; background: #2e0d0d; color: #f87171; }
+  .vf-btn { flex: 1; padding: 16px; border-radius: 8px; border: 1px solid #3a3a55; background: #12141e; color: #e8e8f0; cursor: pointer; font-size: 15px; font-weight: 600; font-family: 'Inter', sans-serif; }
+  .vf-btn:hover { border-color: #6c63ff; }
+  .vf-btn.correct { border-color: #4ade80; background: #0d2e1a; color: #4ade80; }
+  .vf-btn.wrong { border-color: #f87171; background: #2e0d0d; color: #f87171; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-p1 { background: #1e1a3a; color: #8b85ff; }
+  .badge-p2 { background: #1a2e1a; color: #4ade80; }
+  .badge-p3 { background: #2e1a1a; color: #f87171; }
+  .badge-final { background: #2e2a0d; color: #fbbf24; }
+  .missed-item { background: #12141e; border-radius: 8px; padding: 12px; margin: 6px 0; border-left: 3px solid #f87171; }
+  .section-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #8888aa; text-transform: uppercase; margin: 1.2rem 0 0.6rem; }
+  .ex-card { background: #12141e; border-radius: 10px; padding: 14px 16px; margin: 10px 0; border: 1px solid #2a2a40; }
+  .ex-prob { color: #e8e8f0; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+  .ex-steps { color: #8b85ff; font-size: 13px; line-height: 1.7; margin-bottom: 8px; }
+  .ex-ans { color: #4ade80; font-size: 14px; font-weight: 600; }
+  .step-chip { display: block; width: 100%; text-align: left; padding: 12px 14px; margin: 6px 0; border-radius: 8px; border: 1px solid #3a3a55; background: #12141e; color: #e8e8f0; cursor: pointer; font-size: 13px; line-height: 1.5; }
+  .step-chip:hover { border-color: #6c63ff; }
+  .step-chip.picked { background: #1e1a3a; border-color: #6c63ff; color: #8b85ff; }
+  .step-chip.right { border-color: #4ade80; background: #0d2e1a; color: #4ade80; }
+  .step-chip.wrongpos { border-color: #f87171; background: #2e0d0d; color: #f87171; }
+  .num-pill { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:#6c63ff; color:#fff; font-size:11px; font-weight:700; margin-right:8px; }
+  .home-card { margin-bottom: 12px; cursor: pointer; transition: border-color .15s; }
+  .home-card:hover { border-color: #6c63ff; }
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script>
+/* ============================== DATA ============================== */
+
+const META = {
+  p1: { label: "1er Parcial", topic: "Derivadas y Diferenciales", badge: "badge-p1" },
+  p2: { label: "2do Parcial", topic: "Integrales", badge: "badge-p2" },
+  p3: { label: "3er Parcial", topic: "Ec. Diferenciales y Regla de la Cadena", badge: "badge-p3" },
+};
+
+const CONCEPTS = {
+  p1: [
+    { term: "Razón de cambio", def: "Expresa qué tan rápido cambia una cantidad." },
+    { term: "Tangente", def: "La recta que corta a una curva en un punto." },
+    { term: "Secante", def: "La recta que corta a una curva en dos puntos." },
+    { term: "Derivada", def: "Es la pendiente de la recta tangente a la curva." },
+    { term: "Valor medido", def: "Cantidad obtenida al realizar una medición con instrumentos." },
+    { term: "Error relativo", def: "Cociente entre el error absoluto y el valor considerado como verdadero." },
+    { term: "Error absoluto", def: "Cociente entre el valor real y el valor obtenido por la medición." },
+    { term: "Valor real", def: "Valor aceptado como verdadero." },
+  ],
+  p2: [
+    { term: "La integral", def: "Es el área debajo de la curva de la función." },
+    { term: "Diferencial de x (dx)", def: "Elemento presente en la indicación de una integral." },
+    { term: "Integral definida", def: "Tipo de integral donde se indica un intervalo." },
+    { term: "Integral indefinida", def: "Tipo de integral donde no se indica el intervalo." },
+    { term: "La derivada", def: "Operación opuesta a la integración." },
+    { term: "El intervalo", def: "Indicación de dos valores sobre el eje x." },
+    { term: "\"a\"", def: "Letra que indica el valor numérico menor." },
+    { term: "\"b\"", def: "Letra que indica el valor numérico mayor." },
+  ],
+  p3: [
+    { term: "Regla de la cadena", def: "Método de derivación para funciones compuestas." },
+    { term: "Orden", def: "Depende de la 1ra o 2da derivada presente en la ecuación." },
+    { term: "Ecuación diferencial", def: "Expresión algebraica con derivadas y funciones." },
+    { term: "Separación de variables", def: "Método de solución de ecuaciones diferenciales." },
+    { term: "Función externa", def: "1ra función que se deriva al aplicar la regla de la cadena." },
+    { term: "Función interna", def: "2da función que se deriva al aplicar la regla de la cadena." },
+    { term: "Ecuación ordinaria", def: "Tipo de ecuación diferencial." },
+    { term: "Grado", def: "Depende del exponente de la variable dependiente." },
+  ],
+};
+
+const VF = {
+  p1: [
+    { s: "La recta secante corta a una curva en un solo punto.", v: false },
+    { s: "La derivada es la pendiente de la recta tangente a la curva.", v: true },
+    { s: "El error relativo es el cociente entre el error absoluto y el valor verdadero.", v: true },
+    { s: "El valor medido es el valor aceptado como verdadero.", v: false },
+  ],
+  p2: [
+    { s: "La integral definida no indica un intervalo de evaluación.", v: false },
+    { s: "La derivada es la operación opuesta a la integración.", v: true },
+    { s: "En una integral definida ∫ₐᵇ, la letra \"b\" indica el valor numérico mayor.", v: true },
+    { s: "El símbolo dx en una integral representa el intervalo de integración.", v: false },
+  ],
+  p3: [
+    { s: "El orden de una ecuación diferencial depende del exponente de la variable dependiente.", v: false },
+    { s: "La separación de variables es un método para resolver ecuaciones diferenciales.", v: true },
+    { s: "En la regla de la cadena, la función interna se deriva antes que la externa.", v: false },
+  ],
+};
+
+const EXO = { // ejercicios originales de los exámenes, con explicación
+  p1: [
+    { p: "Aplicando diferenciales, determina √18.7", steps: "x₀=16 (raíz exacta cercana) · dx=18.7−16=2.7 · f(x)=√x → f'(x)=1/(2√x) → f'(16)=1/8 · dy=f'(16)·dx=(1/8)(2.7)=0.3375", a: "√18.7 ≈ 4.3375" },
+    { p: "Un cubo de metal tiene 27cm por lado. Al aumentar su temperatura se dilata 7% por lado. Determina el incremento de su volumen con diferenciales.", steps: "L=27cm, dL=27(0.07)=1.89cm · V=L³ → dV=3L²dL · dV=3(27)²(1.89)=4,133.43 cm³", a: "dV ≈ 4,133.43 cm³ (incremento aproximado por diferenciales)" },
+    { p: "Un disco de acero tiene un diámetro de 43cm. Determina la variación de su área si el radio se incrementa 0.55cm.", steps: "R=43/2=21.5cm · A=πR² → dA=2πR·dr · dA=2π(21.5)(0.55)", a: "dA ≈ 74.30 cm²" },
+  ],
+  p2: [
+    { p: "Si f(x)=13x⁻⁶−15x⁻⁵+5x, determina la 2da derivada.", steps: "f'(x)=−78x⁻⁷+75x⁻⁶+5 · f''(x)=−7(−78x⁻⁸)−6(75x⁻⁷)", a: "f''(x) = 546x⁻⁸ − 450x⁻⁷" },
+    { p: "Evalúa la integral definida ∫₁⁴ (5x³+7x³) dx", steps: "Integra: ∫5x³dx=5x⁴/4, ∫7x³dx=7x⁴/4 · Evalúa en x=4: 320+448=768 · Evalúa en x=1: 1.25+1.75=3 · Resta: 768−3", a: "= 765 u²" },
+    { p: "Evalúa la integral definida ∫₋₂³ (3x⁴+7x³−2x²−5) dx", steps: "Antiderivada: 3x⁵/5+7x⁴/4−2x³/3−5x · Evalúa en x=3 ≈254.55 · Evalúa en x=−2 ≈24.07 · Resta los valores", a: "≈ 230.477 u²" },
+  ],
+  p3: [
+    { p: "Deriva y simplifica lo más posible: f(x)=√(x⁵−7x⁴)", steps: "f(x)=(x⁵−7x⁴)^(1/2) · f'(x)=½(x⁵−7x⁴)^(−1/2)·(5x⁴−28x³) · Factoriza x³: 5x⁴−28x³=x³(5x−28)", a: "f'(x) = x³(5x−28) / [2√(x⁵−7x⁴)]" },
+    { p: "Deriva y simplifica: f(x)=cos⁵(x⁶−12)", steps: "Regla de la cadena (potencia → coseno → interna) · f'(x)=5cos⁴(x⁶−12)·(−sen(x⁶−12))·(6x⁵)", a: "f'(x) = −30x⁵cos⁴(x⁶−12)·sen(x⁶−12)" },
+    { p: "Resuelve la ecuación diferencial: dy/dx + 7x² + 9x = −16", steps: "Despeja: dy/dx=−16−7x²−9x · Separa variables: dy=(−7x²−9x−16)dx · Integra ambos lados", a: "y = −7x³/3 − 9x²/2 − 16x + C" },
+  ],
+};
+
+const EXN = { // ejercicios nuevos de práctica (creados para reforzar)
+  p1: [
+    { p: "Aplicando diferenciales, determina √26.2", steps: "x₀=25, dx=26.2−25=1.2 · f'(x)=1/(2√x) → f'(25)=1/10 · dy=(1/10)(1.2)=0.12", a: "√26.2 ≈ 5.12" },
+    { p: "Una esfera de radio 10cm se expande y su radio aumenta 0.2cm. Determina el incremento aproximado de su volumen con diferenciales (V=4/3 π r³).", steps: "dV=4πr²dr · dV=4π(10)²(0.2)=80π", a: "dV ≈ 251.33 cm³" },
+  ],
+  p2: [
+    { p: "Determina la 2da derivada de f(x)=4x⁻³+6x⁻²−2x", steps: "f'(x)=−12x⁻⁴−12x⁻³−2 · f''(x)=48x⁻⁵+36x⁻⁴", a: "f''(x) = 48x⁻⁵ + 36x⁻⁴" },
+    { p: "Evalúa la integral definida ∫₀² (3x²+4x) dx", steps: "Antiderivada: x³+2x² · Evalúa en x=2: 8+8=16 · Evalúa en x=0: 0", a: "= 16 u²" },
+  ],
+  p3: [
+    { p: "Deriva y simplifica: f(x)=sen³(2x²+1)", steps: "Regla de la cadena (potencia → seno → interna) · f'(x)=3sen²(2x²+1)·cos(2x²+1)·(4x)", a: "f'(x) = 12x·sen²(2x²+1)·cos(2x²+1)" },
+    { p: "Resuelve la ecuación diferencial: dy/dx = 6x² − 4x + 5", steps: "Separa variables: dy=(6x²−4x+5)dx · Integra ambos lados", a: "y = 2x³ − 2x² + 5x + C" },
+  ],
+};
+
+const STEPORDER = {
+  p1: {
+    title: "Aproximar una raíz usando diferenciales",
+    formula: "dy = f'(x₀) · dx,    f(x) ≈ f(x₀) + dy",
+    example: "Ejemplo: aproxima √9.3 → x₀=9, dx=0.3, f'(9)=1/6, dy=0.05, √9.3≈3.05",
+    steps: [
+      "Identifica un valor x₀ cercano cuya raíz sea exacta o conocida.",
+      "Calcula dx = x − x₀ (la diferencia entre el valor real y x₀).",
+      "Deriva la función: f'(x) = 1/(2√x).",
+      "Evalúa f'(x₀) sustituyendo x₀ en la derivada.",
+      "Calcula dy = f'(x₀) · dx.",
+      "Suma el resultado: f(x) ≈ f(x₀) + dy.",
+    ],
+  },
+  p2: {
+    title: "Evaluar una integral definida",
+    formula: "∫ₐᵇ f(x) dx = F(b) − F(a)",
+    example: "Ejemplo: ∫₀²(2x)dx → F(x)=x², F(2)=4, F(0)=0, resultado=4",
+    steps: [
+      "Identifica los límites de integración a (menor) y b (mayor).",
+      "Encuentra la antiderivada F(x) de f(x), sumando 1 al exponente y dividiendo entre el nuevo exponente.",
+      "Evalúa F(x) en el límite superior b: F(b).",
+      "Evalúa F(x) en el límite inferior a: F(a).",
+      "Resta los resultados: F(b) − F(a).",
+      "El resultado es el valor del área bajo la curva (con sus unidades²).",
+    ],
+  },
+  p3: {
+    title: "Resolver una ecuación diferencial por separación de variables",
+    formula: "dy/dx = f(x)  →  dy = f(x)dx  →  y = ∫f(x)dx + C",
+    example: "Ejemplo: dy/dx=4x → dy=4xdx → ∫dy=∫4xdx → y=2x²+C",
+    steps: [
+      "Despeja dy/dx dejando todos los términos con x del otro lado de la igualdad.",
+      "Multiplica ambos lados por dx para separar las variables: dy = f(x)dx.",
+      "Integra ambos lados de la ecuación: ∫dy = ∫f(x)dx.",
+      "Resuelve cada integral aplicando las reglas de potencias.",
+      "Agrega la constante de integración C al resultado.",
+      "Escribe la solución general y = F(x) + C.",
+    ],
+  },
+};
+
+/* ============================== HELPERS ============================== */
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function buildConceptItem(term, def, allDefs, closed) {
+  if (!closed) return { type: 'concept_open', prompt: term, answer: def };
+  const distractors = shuffle(allDefs.filter(d => d !== def)).slice(0, 3);
+  const options = shuffle([def, ...distractors]);
+  return { type: 'concept_closed', prompt: term, options, answer: def };
+}
+
+function buildVfItem(parcialKey, item) {
+  return { type: 'vf', prompt: item.s, answer: item.v, badge: META[parcialKey] ? META[parcialKey].badge : 'badge-final' };
+}
+
+function buildExerciseItem(ex, badge) {
+  return { type: 'exercise', prompt: ex.p, steps: ex.steps, answer: ex.a, badge };
+}
+
+const ALL_DEFS_FLAT = [...CONCEPTS.p1, ...CONCEPTS.p2, ...CONCEPTS.p3].map(c => c.def);
+
+/* ============================== STATE ============================== */
+
+let state = {
+  screen: 'home', // home | parcial | play | result
+  parcial: null,  // 'p1'|'p2'|'p3'|null (null = final exam)
+  ptab: 'concepts', // concepts | vf | exercises
+  // play engine state
+  playFrom: null, // where to return: 'parcial' | 'home'
+  queue: [],
+  idx: 0,
+  scores: [],
+  revealed: false,
+  selected: null,
+  userAnswer: '',
+  // step order state
+  stepPicked: [],
+  stepChecked: false,
+};
+
+function render() {
+  const root = document.getElementById('root');
+  if (state.screen === 'home') root.innerHTML = renderHome();
+  else if (state.screen === 'parcial') root.innerHTML = renderParcial();
+  else if (state.screen === 'play') root.innerHTML = renderPlay();
+  else if (state.screen === 'result') root.innerHTML = renderResult();
+}
+
+/* ============================== HOME ============================== */
+
+function renderHome() {
+  return `
+    <div style="max-width:640px;margin:0 auto">
+      <div style="text-align:center;padding:2rem 0 1.5rem">
+        <div style="font-size:13px;color:#8888aa;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem">Cálculo Diferencial</div>
+        <h1 style="font-size:26px;font-weight:700;color:#e8e8f0">Centro de estudio</h1>
+        <p style="color:#8888aa;font-size:14px;margin-top:.4rem">Conceptos, verdadero/falso, ejercicios y examen final simulado</p>
+      </div>
+      ${Object.entries(META).map(([key, d]) => `
+        <div class="card home-card" onclick="goParcial('${key}')">
+          <span class="badge ${d.badge}">${d.label}</span>
+          <div style="font-size:16px;font-weight:600;color:#e8e8f0;margin-top:6px">${d.topic}</div>
+          <div style="font-size:13px;color:#8888aa;margin-top:3px">${CONCEPTS[key].length} conceptos · ${VF[key].length} V/F · ${EXO[key].length} ejercicios explicados · ${EXN[key].length} nuevos</div>
+        </div>
+      `).join('')}
+      <div class="card home-card" style="border:1px solid #6c63ff" onclick="goFinal()">
+        <span class="badge badge-final">Examen Final</span>
+        <div style="font-size:16px;font-weight:600;color:#e8e8f0;margin-top:6px">Simulación semestral · 50 incisos</div>
+        <div style="font-size:13px;color:#8888aa;margin-top:3px">24 teóricos (relación de columnas) · 11 V/F · 15 ejercicios</div>
+      </div>
+    </div>
+  `;
+}
+
+window.goParcial = function(key) { state.parcial = key; state.ptab = 'concepts'; state.screen = 'parcial'; state.stepPicked = []; state.stepChecked = false; render(); };
+window.goHome = function() { state.screen = 'home'; render(); };
+
+/* ============================== PARCIAL PAGE ============================== */
+
+function renderParcial() {
+  const key = state.parcial, d = META[key];
+  const tabsHtml = `
+    <div style="display:flex;gap:8px;margin-bottom:1.4rem;flex-wrap:wrap">
+      <button class="tab ${state.ptab === 'concepts' ? 'active' : ''}" onclick="setPtab('concepts')">Conceptos</button>
+      <button class="tab ${state.ptab === 'vf' ? 'active' : ''}" onclick="setPtab('vf')">Verdadero / Falso</button>
+      <button class="tab ${state.ptab === 'exercises' ? 'active' : ''}" onclick="setPtab('exercises')">Ejercicios</button>
+    </div>
+  `;
+  let body = '';
+  if (state.ptab === 'concepts') body = renderConceptsTab(key);
+  else if (state.ptab === 'vf') body = renderVfTab(key);
+  else body = renderExercisesTab(key);
+
+  return `
+    <div style="max-width:640px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.2rem">
+        <button class="btn btn-outline btn-sm" onclick="goHome()">← Inicio</button>
+        <span class="badge ${d.badge}">${d.label}</span>
+        <span style="color:#e8e8f0;font-weight:600;font-size:14px">${d.topic}</span>
+      </div>
+      ${tabsHtml}
+      ${body}
+    </div>
+  `;
+}
+
+window.setPtab = function(tab) { state.ptab = tab; state.stepPicked = []; state.stepChecked = false; render(); };
+
+function renderConceptsTab(key) {
+  const items = CONCEPTS[key];
+  return `
+    <div class="card">
+      <div class="section-title">Memoriza estos conceptos (exactos del examen)</div>
+      ${items.map(s => `
+        <div class="schema-item">
+          <span class="schema-term">${s.term}</span>
+          <span class="schema-def">${s.def}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div style="display:flex;gap:10px;margin-top:1.2rem">
+      <button class="btn btn-primary" style="flex:1" onclick="startConceptPractice('${key}', false)">Pregunta abierta →</button>
+      <button class="btn btn-outline" style="flex:1" onclick="startConceptPractice('${key}', true)">Opción múltiple →</button>
+    </div>
+  `;
+}
+
+function renderVfTab(key) {
+  const items = VF[key];
+  return `
+    <div class="card">
+      <div class="section-title">Enunciados verdadero / falso</div>
+      <p style="color:#8888aa;font-size:13px;line-height:1.6">Practica identificando si cada enunciado es verdadero o falso antes de pasar al examen final.</p>
+    </div>
+    <div style="margin-top:1.2rem">
+      <button class="btn btn-primary" style="width:100%" onclick="startVfPractice('${key}')">Practicar Verdadero / Falso (${items.length}) →</button>
+    </div>
+  `;
+}
+
+function renderExercisesTab(key) {
+  const so = STEPORDER[key];
+  const stepsShuffled = state._soShuffled && state._soKey === key ? state._soShuffled : null;
+  if (!stepsShuffled) { state._soShuffled = shuffle(so.steps); state._soKey = key; }
+
+  const orderBlock = renderStepOrder(key);
+
+  return `
+    <div class="card" style="margin-bottom:1.2rem">
+      <div class="section-title">Práctica: ordena los pasos de la fórmula</div>
+      <div style="color:#e8e8f0;font-size:14px;font-weight:600;margin-bottom:4px">${so.title}</div>
+      <div class="mono" style="color:#8b85ff;font-size:13px;margin-bottom:6px">${so.formula}</div>
+      <div style="color:#8888aa;font-size:12px;margin-bottom:14px">${so.example}</div>
+      ${orderBlock}
+    </div>
+
+    <div class="card" style="margin-bottom:1.2rem">
+      <div class="section-title">Ejercicios explicados paso a paso</div>
+      ${EXO[key].map(e => `
+        <div class="ex-card">
+          <div class="ex-prob">${e.p}</div>
+          <div class="ex-steps"><strong>Procedimiento:</strong> ${e.steps}</div>
+          <div class="ex-ans">Resp: ${e.a}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card">
+      <div class="section-title">Ejercicios nuevos para practicar</div>
+      <p style="color:#8888aa;font-size:13px;margin-bottom:12px">Mismo tipo de problema, valores distintos. Resuélvelos y luego revela el procedimiento.</p>
+      <button class="btn btn-primary" style="width:100%" onclick="startExercisePractice('${key}')">Practicar ejercicios nuevos (${EXN[key].length}) →</button>
+    </div>
+  `;
+}
+
+function renderStepOrder(key) {
+  const so = STEPORDER[key];
+  const shuffled = state._soShuffled;
+  const picked = state.stepPicked;
+  const checked = state.stepChecked;
+
+  const remaining = shuffled.filter(s => !picked.includes(s));
+  const list = checked
+    ? picked.map((s, i) => {
+        const correctIdx = so.steps.indexOf(s);
+        const isRight = correctIdx === i;
+        return `<div class="step-chip ${isRight ? 'right' : 'wrongpos'}"><span class="num-pill">${i + 1}</span>${s}</div>`;
+      }).join('')
+    : picked.map((s, i) => `<div class="step-chip picked"><span class="num-pill">${i + 1}</span>${s}</div>`).join('')
+      + remaining.map(s => `<button class="step-chip" onclick="pickStep('${key}', ${shuffled.indexOf(s)})">${s}</button>`).join('');
+
+  let footer = '';
+  if (!checked) {
+    if (picked.length === so.steps.length) {
+      footer = `<button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="checkStepOrder()">Verificar orden</button>`;
+    } else {
+      footer = `<div style="color:#8888aa;font-size:12px;margin-top:8px">Selecciona los pasos en el orden correcto (${picked.length}/${so.steps.length})</div>`;
+    }
+  } else {
+    const correctCount = picked.filter((s, i) => so.steps.indexOf(s) === i).length;
+    footer = `
+      <div style="color:${correctCount === so.steps.length ? '#4ade80' : '#fbbf24'};font-size:13px;font-weight:600;margin-top:10px">${correctCount} de ${so.steps.length} en la posición correcta</div>
+      <button class="btn btn-outline" style="width:100%;margin-top:8px" onclick="resetStepOrder('${key}')">Reintentar</button>
+    `;
+  }
+
+  return `<div>${list}</div>${footer}`;
+}
+
+window.pickStep = function(key, shuffledIdx) {
+  const s = state._soShuffled[shuffledIdx];
+  if (!state.stepPicked.includes(s)) state.stepPicked.push(s);
+  render();
+};
+window.checkStepOrder = function() { state.stepChecked = true; render(); };
+window.resetStepOrder = function(key) { state.stepPicked = []; state.stepChecked = false; state._soShuffled = shuffle(STEPORDER[key].steps); render(); };
+
+/* ============================== PRACTICE LAUNCHERS ============================== */
+
+window.startConceptPractice = function(key, closed) {
+  const items = CONCEPTS[key];
+  const defs = items.map(c => c.def);
+  state.queue = shuffle(items.map(c => buildConceptItem(c.term, c.def, defs, closed)));
+  state.playFrom = 'parcial';
+  startPlay();
+};
+
+window.startVfPractice = function(key) {
+  state.queue = shuffle(VF[key].map(v => buildVfItem(key, v)));
+  state.playFrom = 'parcial';
+  startPlay();
+};
+
+window.startExercisePractice = function(key) {
+  state.queue = shuffle(EXN[key].map(e => buildExerciseItem(e, META[key].badge)));
+  state.playFrom = 'parcial';
+  startPlay();
+};
+
+window.goFinal = function() {
+  const conceptItems = [];
+  ['p1', 'p2', 'p3'].forEach(key => {
+    CONCEPTS[key].forEach((c, i) => {
+      const closed = i % 2 === 1; // alterna abierta/cerrada
+      conceptItems.push(buildConceptItem(c.term, c.def, ALL_DEFS_FLAT, closed));
+    });
+  });
+  const vfItems = [];
+  ['p1', 'p2', 'p3'].forEach(key => VF[key].forEach(v => vfItems.push(buildVfItem(key, v))));
+
+  const exItems = [];
+  ['p1', 'p2', 'p3'].forEach(key => {
+    EXO[key].forEach(e => exItems.push(buildExerciseItem(e, META[key].badge)));
+    EXN[key].forEach(e => exItems.push(buildExerciseItem(e, META[key].badge)));
+  });
+
+  state.queue = [...shuffle(conceptItems), ...shuffle(vfItems), ...shuffle(exItems)];
+  state.parcial = null;
+  state.playFrom = 'home';
+  startPlay();
+};
+
+function startPlay() {
+  state.screen = 'play';
+  state.idx = 0;
+  state.scores = [];
+  state.revealed = false;
+  state.selected = null;
+  state.userAnswer = '';
+  render();
+}
+
+/* ============================== GENERIC PLAYER ============================== */
+
+function renderPlay() {
+  const total = state.queue.length;
+  const item = state.queue[state.idx];
+  const pct = Math.round((state.idx / total) * 100);
+  const isFinal = state.parcial === null;
+  const backLabel = isFinal ? 'Inicio' : (META[state.parcial] ? META[state.parcial].label : 'Atrás');
+  const backFn = isFinal ? 'goHome()' : `goParcial('${state.parcial}')`;
+
+  let typeLabel = '';
+  if (item.type === 'concept_open') typeLabel = 'Concepto · pregunta abierta';
+  else if (item.type === 'concept_closed') typeLabel = 'Concepto · opción múltiple';
+  else if (item.type === 'vf') typeLabel = 'Verdadero / Falso';
+  else if (item.type === 'exercise') typeLabel = 'Ejercicio';
+
+  let body = '';
+
+  if (item.type === 'concept_closed') {
+    body = item.options.map(opt => {
+      let cls = 'option-btn';
+      if (state.revealed) {
+        if (opt === item.answer) cls += ' correct';
+        else if (opt === state.selected && opt !== item.answer) cls += ' wrong';
+      }
+      return `<button class="${cls}" onclick="selectAndCheck('${escapeJs(opt)}')" ${state.revealed ? 'disabled' : ''}>${opt}</button>`;
+    }).join('');
+  } else if (item.type === 'vf') {
+    const vCls = state.revealed ? (item.answer === true ? 'correct' : (state.selected === true ? 'wrong' : '')) : '';
+    const fCls = state.revealed ? (item.answer === false ? 'correct' : (state.selected === false ? 'wrong' : '')) : '';
+    body = `
+      <div style="display:flex;gap:10px">
+        <button class="vf-btn ${vCls}" onclick="selectAndCheckBool(true)" ${state.revealed ? 'disabled' : ''}>Verdadero</button>
+        <button class="vf-btn ${fCls}" onclick="selectAndCheckBool(false)" ${state.revealed ? 'disabled' : ''}>Falso</button>
+      </div>
+    `;
+  } else if (item.type === 'concept_open') {
+    body = `<textarea placeholder="Escribe la definición que recuerdes..." onchange="updateUA(this.value)">${state.userAnswer}</textarea>`;
+  } else if (item.type === 'exercise') {
+    body = `<textarea placeholder="Resuelve el ejercicio y anota tu respuesta..." onchange="updateUA(this.value)">${state.userAnswer}</textarea>`;
+  }
+
+  let actionBlock = '';
+  if (!state.revealed) {
+    if (item.type === 'concept_closed' || item.type === 'vf') {
+      actionBlock = state.selected !== null ? '' : `<div style="color:#8888aa;font-size:12px;margin-top:8px">Selecciona una opción</div>`;
+    } else {
+      actionBlock = `<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="revealAnswer()">Ver respuesta</button>`;
+    }
+  } else {
+    if (item.type === 'concept_open') {
+      actionBlock = `
+        <div class="card" style="margin-top:14px;border-left:3px solid #6c63ff">
+          <div style="font-size:12px;color:#8888aa;margin-bottom:6px">Definición correcta</div>
+          <div style="color:#e8e8f0;font-size:14px;line-height:1.6">${item.answer}</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn btn-success" style="flex:1" onclick="score(true)">Lo supe ✓</button>
+          <button class="btn btn-danger" style="flex:1" onclick="score(false)">No lo supe ✗</button>
+        </div>
+      `;
+    } else if (item.type === 'exercise') {
+      actionBlock = `
+        <div class="card" style="margin-top:14px;border-left:3px solid #6c63ff">
+          <div style="font-size:12px;color:#8888aa;margin-bottom:6px">Procedimiento</div>
+          <div style="color:#c0c0d8;font-size:13px;line-height:1.7;margin-bottom:10px">${item.steps}</div>
+          <div style="font-size:12px;color:#8888aa;margin-bottom:4px">Respuesta</div>
+          <div style="color:#4ade80;font-size:15px;font-weight:600">${item.answer}</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn btn-success" style="flex:1" onclick="score(true)">Lo supe ✓</button>
+          <button class="btn btn-danger" style="flex:1" onclick="score(false)">No lo supe ✗</button>
+        </div>
+      `;
+    } else {
+      // concept_closed / vf: auto-advance button after reveal
+      actionBlock = `<button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="nextAfterAuto()">Siguiente →</button>`;
+    }
+  }
+
+  return `
+    <div style="max-width:640px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+        <button class="btn btn-outline btn-sm" onclick="${backFn}">← ${backLabel}</button>
+        ${item.badge ? `<span class="badge ${item.badge}">${typeLabel}</span>` : `<span style="color:#8888aa;font-size:12px">${typeLabel}</span>`}
+        <span style="color:#8888aa;font-size:13px;margin-left:auto">${state.idx + 1} / ${total}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="card" style="margin-bottom:14px">
+        <div style="font-size:15px;font-weight:500;color:#e8e8f0;line-height:1.6">${item.prompt}</div>
+      </div>
+      ${body}
+      ${actionBlock}
+    </div>
+  `;
+}
+
+function escapeJs(s) { return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+
+window.updateUA = function(v) { state.userAnswer = v; };
+
+window.selectAndCheck = function(opt) {
+  if (state.revealed) return;
+  const item = state.queue[state.idx];
+  state.selected = opt;
+  state.revealed = true;
+  state.scores.push(opt === item.answer);
+  render();
+};
+
+window.selectAndCheckBool = function(val) {
+  if (state.revealed) return;
+  const item = state.queue[state.idx];
+  state.selected = val;
+  state.revealed = true;
+  state.scores.push(val === item.answer);
+  render();
+};
+
+window.revealAnswer = function() { state.revealed = true; render(); };
+
+window.score = function(val) {
+  state.scores.push(val);
+  advance();
+};
+
+window.nextAfterAuto = function() { advance(); };
+
+function advance() {
+  state.idx++;
+  state.revealed = false;
+  state.selected = null;
+  state.userAnswer = '';
+  if (state.idx >= state.queue.length) state.screen = 'result';
+  render();
+}
+
+/* ============================== RESULT ============================== */
+
+function renderResult() {
+  const correct = state.scores.filter(Boolean).length;
+  const total = state.queue.length;
+  const pct = Math.round((correct / total) * 100);
+  const color = pct >= 80 ? '#4ade80' : pct >= 50 ? '#fbbf24' : '#f87171';
+  const missedIdx = state.scores.map((s, i) => s ? -1 : i).filter(i => i !== -1);
+  const missed = missedIdx.map(i => state.queue[i]);
+  const isFinal = state.parcial === null;
+
+  return `
+    <div style="max-width:640px;margin:0 auto">
+      <div style="text-align:center;padding:2rem 0 1.5rem">
+        <div style="font-size:48px;font-weight:700;color:${color}">${pct}%</div>
+        <div style="font-size:16px;color:#8888aa;margin-top:4px">${correct} de ${total} correctas</div>
+        ${isFinal ? `<span class="badge badge-final" style="margin-top:10px;display:inline-block">Examen Final · 50 incisos</span>` : `<span class="badge ${META[state.parcial].badge}" style="margin-top:10px;display:inline-block">${META[state.parcial].topic}</span>`}
+      </div>
+      ${missed.length > 0 ? `
+        <div class="card" style="margin-bottom:1rem">
+          <div class="section-title">Reactivos fallados (${missed.length})</div>
+          ${missed.map(q => `
+            <div class="missed-item">
+              <div style="font-size:13px;color:#f87171;margin-bottom:4px">${q.prompt}</div>
+              <div style="font-size:13px;color:#c0c0d8">${q.type === 'exercise' ? (q.steps + ' → ' + q.answer) : (q.type === 'vf' ? (q.answer ? 'Verdadero' : 'Falso') : q.answer)}</div>
+            </div>
+          `).join('')}
+        </div>
+      ` : `<div style="text-align:center;padding:1rem;color:#4ade80">¡Sin errores! Excelente dominio.</div>`}
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" style="flex:1" onclick="repeatSame()">Repetir</button>
+        ${missed.length > 0 ? `<button class="btn btn-outline" style="flex:1" onclick="repeatMissed()">Solo falladas</button>` : ''}
+        <button class="btn btn-outline" style="flex:1" onclick="${isFinal ? 'goHome()' : `goParcial('${state.parcial}')`}">${isFinal ? 'Inicio' : 'Volver'}</button>
+      </div>
+    </div>
+  `;
+}
+
+window.repeatSame = function() {
+  state.queue = shuffle(state.queue);
+  startPlay();
+};
+
+window.repeatMissed = function() {
+  const missedIdx = state.scores.map((s, i) => s ? -1 : i).filter(i => i !== -1);
+  state.queue = shuffle(missedIdx.map(i => state.queue[i]));
+  startPlay();
+};
+
+render();
+</script>
+</body>
+</html>
